@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table Online</title>
+  <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+  <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+  <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+  <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <button @click="Check" class="btn-primary">Message</button>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">№</th>
+          <th scope="col">Марка</th>
+          <th scope="col">Модель</th>
+          <th scope="col">Год</th>
+          <th scope="col">Кузов</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(value, key) in cars" :key="key">
+          <th scope="row">{{key+1}}</th>
+          <th>{{value.mark}}</th>
+          <th>{{value.model}}</th>
+          <th>{{value.age}}</th>
+          <th>{{value.carcase}}</th>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script type="text/javascript">
+
+    var app = new Vue({
+      el: "#app",
+      data: {
+        cars: []
+      },
+      created() {
+        this.setupStream();
+      },
+      methods: {
+        setupStream() {
+          const es = new EventSource("http://localhost:4500/sse");
+          es.addEventListener("message", event => {
+            let data = JSON.parse(event.data);
+            this.cars = data;
+          }, false);
+        },
+        Check() {
+          fetch("http://localhost:4500/message")
+            .then(res => console.log(res.status))
+        }
+      }
+    })
+
+  </script>
+</body>
+
+</html>
